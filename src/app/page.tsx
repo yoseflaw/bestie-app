@@ -1,12 +1,12 @@
 import Navbar from "@/components/Navbar";
 import Examples from "@/components/Examples";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 
 
 export default async function Home() {
   const user = await currentUser();
   const userId = user?.id || "anonymous";
-  const userImageUrl = user?.profileImageUrl || "/placeholder-user.jpg"
+  const userImageUrl = user?.imageUrl || "/placeholder-user.jpg"
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">

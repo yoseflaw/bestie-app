@@ -6,7 +6,7 @@ import clerk from "@clerk/clerk-sdk-node";
 import { CallbackManager } from "@langchain/core/callbacks/manager"
 import { PromptTemplate } from "@langchain/core/prompts";
 import { NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import MemoryManager from "@/app/utils/memory";
 import { rateLimit } from "@/app/utils/rateLimit";
 import twilio from "twilio";

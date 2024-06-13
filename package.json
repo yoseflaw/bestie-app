@@ -14,7 +14,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^0.0.27",
     "@clerk/clerk-sdk-node": "^4.10.12",
-    "@clerk/nextjs": "^4.21.9-snapshot.56dc3e3",
+    "@clerk/nextjs": "^5.1.5",
     "@headlessui/react": "^1.7.15",
     "@langchain/community": "^0.2.5",
     "@langchain/core": "^0.2.5",
@@ -38,7 +38,7 @@
     "eslint-config-next": "13.4.4",
     "hnswlib-node": "^3.0.0",
     "langchain": "^0.2.4",
-    "next": "13.4.4",
+    "next": "^13.5.4",
     "postcss": "8.4.24",
     "react": "18.2.0",
     "react-dom": "18.2.0",
