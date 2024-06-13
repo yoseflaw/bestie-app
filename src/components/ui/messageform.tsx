@@ -1,7 +1,15 @@
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea";
+import { ChatRequestOptions } from "ai";
 
-export default function MessageForm({ input, isLoading, handleInputChange, handleSubmit }) {
+interface MessageFormProps {
+  input: string;
+  isLoading: boolean;
+  handleInputChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  handleSubmit: (e: React.SyntheticEvent<HTMLFormElement>, chatRequestOptions?: ChatRequestOptions) => void;
+}
+
+export default function MessageForm({ input, isLoading, handleInputChange, handleSubmit }: MessageFormProps) {
 
     const customSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -11,7 +19,7 @@ export default function MessageForm({ input, isLoading, handleInputChange, handl
     const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
-        handleSubmit(event);
+        handleSubmit(event as unknown as React.SyntheticEvent<HTMLFormElement>);
       }
     };
   
