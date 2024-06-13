@@ -20,7 +20,7 @@ export async function getCompanions() {
   // var js = JSON.parse(String(data));
   // return String(data);
 
-  const file = await fs.readFile(process.cwd() + '/companions/companions.json', 'utf8');
+  const file = await fs.readFile("./companions/companions.json", 'utf8');
   const data = JSON.parse(file);
   return data
 }

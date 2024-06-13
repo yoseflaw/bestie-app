@@ -74,7 +74,7 @@ export async function POST(req: Request) {
   // vary by the model using it.
   const fs = require("fs").promises;
   // const data = await fs.readFile("companions/" + companionFileName, "utf8");
-  const data = await fs.readFile(process.cwd() + "/companions/" + companionFileName, 'utf8');
+  const data = await fs.readFile("./companions/" + companionFileName, 'utf8');
 
   // Clunky way to break out PREAMBLE and SEEDCHAT from the character file
   const presplit = data.split("###ENDPREAMBLE###");
