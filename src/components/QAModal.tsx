@@ -2,8 +2,11 @@
 
 import {Fragment, useEffect, useState} from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { useCompletion } from "ai/react";
+import { useChat } from "ai/react";
 import {ChatBlock, responseToChatBlocks} from "@/components/ChatBlock";
+import MessageForm from '@/components/ui/messageform'
+import ChatMessage from '@/components/ui/chatmessage'
+import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar"
 
 var last_name = "";
 
@@ -11,54 +14,52 @@ export default function QAModal({
   open,
   setOpen,
   example,
+  userId,
+  userImageUrl,
 }: {
   open: boolean;
   setOpen: any;
   example: any;
+  userId: any;
+  userImageUrl: string;
 }) {
-  if (!example) {
-    // create a dummy so the completion doesn't croak during init.
-    example = new Object();
-    example.llm = "";
-    example.name = "";
-  }
-
-  let {
-    completion,
-    input,
-    isLoading,
-    handleInputChange,
-    handleSubmit,
-    stop,
-    setInput,
-    setCompletion,
-  } = useCompletion({
-    api: "/api/" + example.llm,
-    headers: { name: example.name },
-  });
-
-  let [blocks, setBlocks] = useState<any[] | null>(null)
-
+  const [clientExample, setClientExample] = useState(example);
   useEffect(() => {
-    // When the completion changes, parse it to multimodal blocks for display.
-    if (completion) {
-      setBlocks(responseToChatBlocks(completion))
+    if (!example) {
+      setClientExample({
+        llm: "",
+        name: "",
+      });
     } else {
-      setBlocks(null)
+      setClientExample(example);
     }
-  }, [completion])
+  }, [example]);
 
-  if (!example) {
-    console.log("ERROR: no companion selected");
-    return null;
-  }
+  const { 
+    isLoading,
+    stop,
+    messages, 
+    setMessages, 
+    input,
+    setInput,
+    handleInputChange, 
+    handleSubmit 
+  } = useChat({
+    api: "/api/" + clientExample.llm,
+    headers: { name: clientExample.name },
+  });
 
   const handleClose = () => {
     setInput("");
-    setCompletion("");
+    setMessages([]);
     stop();
     setOpen(false);
   };
+
+  if (!clientExample) {
+    console.log("ERROR: no companion selected");
+    return null;
+  }
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -87,52 +88,28 @@ export default function QAModal({
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-gray-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:p-6 w-full max-w-3xl">
-                <div>
-                  <form onSubmit={handleSubmit}>
-                    <input
-                      placeholder="How's your day?"
-                      className={"w-full flex-auto rounded-md border-0 bg-white/5 px-3.5 py-2 shadow-sm focus:outline-none sm:text-sm sm:leading-6 " + (isLoading && !completion ? "text-gray-600 cursor-not-allowed" : "text-white")}                      
-                      value={input}
-                      onChange={handleInputChange}
-                      disabled={isLoading && !blocks}
+              <div className="flex h-[60px] items-center">
+                <span>Ngobrol dengan {example.name}</span>
+              </div>
+                <div className="h-[80vh]">
+                  <div className="flex flex-col gap-4 h-full overflow-y-auto pb-20">
+                    {messages.map(m => (
+                      <ChatMessage
+                        key={m.id}
+                        role={m.role}
+                        content={m.content}
+                        compImageUrl={example.imageUrl}
+                        userImageUrl={userImageUrl}
+                      />
+                    ))}
+                  </div>
+                  <div className="fixed bottom-0 left-0 right-0 p-4 bg-gray-800">
+                    <MessageForm
+                      input={input}
+                      isLoading={isLoading}
+                      handleInputChange={handleInputChange}
+                      handleSubmit={handleSubmit}
                     />
-                  </form>
-                  <div className="mt-3 sm:mt-5">
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        Chat with {example.name}
-                      </p>
-                    </div>
-                    {blocks && (
-                      <div className="mt-2">
-                        {blocks}
-                      </div>
-                    )}
-
-                    {isLoading && !blocks && (
-                      <p className="flex items-center justify-center mt-4">
-                        <svg
-                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            stroke-width="4"
-                          ></circle>
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          ></path>
-                        </svg>
-                      </p>
-                    )}
                   </div>
                 </div>
               </Dialog.Panel>

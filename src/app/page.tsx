@@ -1,20 +1,26 @@
 import Navbar from "@/components/Navbar";
 import Examples from "@/components/Examples";
+import { currentUser } from "@clerk/nextjs";
 
-export default function Home() {
+
+export default async function Home() {
+  const user = await currentUser();
+  const userId = user?.id || "anonymous";
+  const userImageUrl = user?.profileImageUrl || "/placeholder-user.jpg"
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
       <Navbar />
       <div className="w-full min-h-screen relative isolate overflow-hidden bg-gray-900 px-6 py-24 shadow-2xl sm:px-24 xl:py-32">
         <h1 className="mt-16 mx-auto max-w-2xl text-center text-5xl font-bold tracking-tight text-white sm:text-6xl">
-          AI Companion
+          Wkwk Land
         </h1>
 
         <p className="mx-auto mt-4 max-w-xl text-center text-xl leading-8 text-slate-400">
-          Help you setup an AI companion project with ease. Here are some example characters: 
+          Temukan keseruan hari ini
         </p>
 
-        <Examples />
+        <Examples userId={userId} userImageUrl={userImageUrl}  />
 
         <svg
           viewBox="0 0 1024 1024"

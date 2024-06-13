@@ -5,7 +5,7 @@ import Link from "next/link";
 const navigation = [
   {
     name: "About",
-    href: "https://github.com/a16z-infra/companion-app",
+    href: "https://github.com/yoseflaw/bestie-app",
     current: false,
   },
 ];
@@ -27,16 +27,16 @@ export default function Navbar() {
                 height={0}
                 sizes="100vw"
                 className="block h-8 w-auto lg:hidden rounded-lg"
-                src="https://avatars.githubusercontent.com/u/745163?s=200&v=4"
-                alt="a16z"
+                src="/wkwk.png"
+                alt="wkwk"
               />
               <Image
                 width={0}
                 height={0}
                 sizes="100vw"
                 className="hidden h-8 w-auto lg:block rounded-lg"
-                src="https://avatars.githubusercontent.com/u/745163?s=200&v=4"
-                alt="a16z"
+                src="/wkwk.png"
+                alt="wkwk"
               />
             </div>
             <div className="ml-6">
@@ -58,7 +58,7 @@ export default function Navbar() {
                 ))}
                 <div className="px-3 py-2 text-gray-300">
                   <iframe
-                    src="https://ghbtns.com/github-btn.html?user=a16z-infra&repo=companion-app&type=star&count=true"
+                    src="https://ghbtns.com/github-btn.html?user=yoseflaw&repo=bestie-app&type=star&count=true"
                     frameBorder="0"
                     scrolling="0"
                     width="150"

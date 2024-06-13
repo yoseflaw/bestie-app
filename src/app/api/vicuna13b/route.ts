@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { StreamingTextResponse, LangChainStream } from "ai";
-import { Replicate } from "langchain/llms/replicate";
-import { CallbackManager } from "langchain/callbacks";
+import { Replicate } from "@langchain/community/llms/replicate";
+import { CallbackManager } from "@langchain/core/callbacks/manager"
 import clerk from "@clerk/clerk-sdk-node";
 import MemoryManager from "@/app/utils/memory";
 import { currentUser } from "@clerk/nextjs";

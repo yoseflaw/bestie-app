@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { StreamingTextResponse, LangChainStream } from "ai";
-import { Replicate, ReplicateInput } from "langchain/llms/replicate";
-import { CallbackManager } from "langchain/callbacks";
+import { Replicate, ReplicateInput } from "@langchain/community/llms/replicate";
+import { CallbackManager } from "@langchain/core/callbacks/manager"
 import clerk from "@clerk/clerk-sdk-node";
 import MemoryManager from "@/app/utils/memory";
 import { currentUser } from "@clerk/nextjs";
@@ -118,7 +118,7 @@ export async function POST(request: Request) {
     await model
       .call(
         `
-       ONLY generate NO more than three sentences as ${name}. DO NOT generate more than three sentences. 
+       ONLY generate NO more than five sentences as ${name}. DO NOT generate more than five sentences. 
        Make sure the output you generate starts with '${name}:' and ends with a period.
 
        ${preamble}

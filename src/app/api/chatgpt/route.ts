@@ -1,14 +1,17 @@
-import { OpenAI } from "langchain/llms/openai";
+import { OpenAI } from "@langchain/openai";
 import dotenv from "dotenv";
 import { LLMChain } from "langchain/chains";
 import { StreamingTextResponse, LangChainStream } from "ai";
 import clerk from "@clerk/clerk-sdk-node";
-import { CallbackManager } from "langchain/callbacks";
-import { PromptTemplate } from "langchain/prompts";
+import { CallbackManager } from "@langchain/core/callbacks/manager"
+import { PromptTemplate } from "@langchain/core/prompts";
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs";
 import MemoryManager from "@/app/utils/memory";
 import { rateLimit } from "@/app/utils/rateLimit";
+import twilio from "twilio";
+import { openai } from '@ai-sdk/openai';
+import { streamText } from 'ai';
 
 dotenv.config({ path: `.env.local` });
 
@@ -16,9 +19,14 @@ export async function POST(req: Request) {
   let clerkUserId;
   let user;
   let clerkUserName;
-  const { prompt, isText, userId, userName } = await req.json();
+  // const { prompt, isText, userId, userName, messages } = await req.json();
+  const { messages } = await req.json();
 
-  const identifier = req.url + "-" + (userId || "anonymous");
+  user = await currentUser();
+  clerkUserId = user?.id;
+  clerkUserName = user?.firstName;
+
+  const identifier = req.url + "-" + (clerkUserId || "anonymous");
   const { success } = await rateLimit(identifier);
   if (!success) {
     console.log("INFO: rate limit exceeded");
@@ -37,15 +45,13 @@ export async function POST(req: Request) {
   const name = req.headers.get("name");
   const companionFileName = name + ".txt";
 
+  const prompt = messages[messages.length-1]['content']
   console.log("prompt: ", prompt);
-  if (isText) {
-    clerkUserId = userId;
-    clerkUserName = userName;
-  } else {
-    user = await currentUser();
-    clerkUserId = user?.id;
-    clerkUserName = user?.firstName;
-  }
+  // if (isText) {
+  //   clerkUserId = userId;
+  //   clerkUserName = userName;
+  // } else {
+  // }
 
   if (!clerkUserId || !!!(await clerk.users.getUser(clerkUserId))) {
     console.log("user not authorized");
@@ -97,57 +103,100 @@ export async function POST(req: Request) {
 
   let relevantHistory = "";
   if (!!similarDocs && similarDocs.length !== 0) {
-    relevantHistory = similarDocs.map((doc) => doc.pageContent).join("\n");
+    relevantHistory = similarDocs.map((doc: { pageContent: any; }) => doc.pageContent).join("\n");
   }
 
-  const { stream, handlers } = LangChainStream();
+  // const { stream, handlers } = LangChainStream();
 
-  const model = new OpenAI({
-    streaming: true,
-    modelName: "gpt-3.5-turbo-16k",
-    openAIApiKey: process.env.OPENAI_API_KEY,
-    callbackManager: CallbackManager.fromHandlers(handlers),
-  });
-  model.verbose = true;
+  // const model = new OpenAI({
+  //   streaming: true,
+  //   modelName: "gpt-4o",
+  //   openAIApiKey: process.env.OPENAI_API_KEY,
+  //   // callbacks: [new ConsoleCallbackHandler()],
+  //   callbackManager: CallbackManager.fromHandlers(handlers),
+  // });
+  // model.verbose = true;
 
-  const replyWithTwilioLimit = isText
-    ? "You reply within 1000 characters."
-    : "";
+  // const replyWithTwilioLimit = isText
+  //   ? "You reply within 1000 characters."
+  //   : "";
 
-  const chainPrompt = PromptTemplate.fromTemplate(`
-    You are ${name} and are currently talking to ${clerkUserName}.
+  // const chainPrompt = PromptTemplate.fromTemplate(`
+  //   You are ${name} and are currently talking to ${clerkUserName}.
 
-    ${preamble}
+  //   ${preamble}
 
-  You reply with answers that range from one sentence to one paragraph and with some details. ${replyWithTwilioLimit}
+  // Below are relevant details about ${name}'s past
+  // ${relevantHistory}
+  
+  // Below is a relevant conversation history
+
+  // ${recentChatHistory}`);
+
+  // const chain = new LLMChain({
+  //   llm: model,
+  //   prompt: chainPrompt,
+  // });
+
+  // const result = await chain
+  //   .call({
+  //     relevantHistory,
+  //     recentChatHistory: recentChatHistory,
+  //   })
+  //   .catch(console.error);
+
+
+  const systemPrompt = `
+  You are ${name} and are currently talking to ${clerkUserName}.
+
+  ${preamble}
 
   Below are relevant details about ${name}'s past
   ${relevantHistory}
-  
+
   Below is a relevant conversation history
 
-  ${recentChatHistory}`);
+  ${recentChatHistory}
+  `
 
-  const chain = new LLMChain({
-    llm: model,
-    prompt: chainPrompt,
+  console.log(systemPrompt)
+
+  const result = await streamText({
+    model: openai('gpt-4o'),
+    system: systemPrompt,
+    messages: messages,
+    async onFinish({text}) {
+      await memoryManager.writeToHistory(
+        name + ": " + text + "\n",
+        companionKey
+      )
+    },
   });
 
-  const result = await chain
-    .call({
-      relevantHistory,
-      recentChatHistory: recentChatHistory,
-    })
-    .catch(console.error);
+  return result.toAIStreamResponse();
 
-  console.log("result", result);
-  const chatHistoryRecord = await memoryManager.writeToHistory(
-    result!.text + "\n",
-    companionKey
-  );
-  console.log("chatHistoryRecord", chatHistoryRecord);
-  if (isText) {
-    return NextResponse.json(result!.text);
-  }
-  return new StreamingTextResponse(stream);
+  // console.log("result", result);
+  // const chatHistoryRecord = await memoryManager.writeToHistory(
+  //   result!.text + "\n",
+  //   companionKey
+  // );
+  // console.log("chatHistoryRecord", chatHistoryRecord);
+  // if (isText) {
+  //   return NextResponse.json(result!.text);
+  // }
+
+  // const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+  // const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  // const twilioClient = twilio(accountSid, twilioAuthToken);
+  // twilioClient.messages
+  //   .create({
+  //       body: result!.text,
+  //       from: 'whatsapp:+14155238886',
+  //       to: 'whatsapp:+628176670997'
+  //   }).catch((err) => {
+  //     console.log("WARNING: failed to send WA.", err);
+  //   });
+
+
+  // return new StreamingTextResponse(stream);
 }

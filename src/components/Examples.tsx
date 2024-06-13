@@ -3,10 +3,14 @@ import { useEffect, useState } from "react";
 import QAModal from "./QAModal";
 import Image from "next/image";
 import { Tooltip } from "react-tooltip";
-
 import { getCompanions } from "./actions";
 
-export default function Examples() {
+interface ExampleProps {
+  userId: string;
+  userImageUrl: string;
+}
+
+export default function Examples({userId, userImageUrl}: ExampleProps) {
   const [QAModalOpen, setQAModalOpen] = useState(false);
   const [CompParam, setCompParam] = useState({
     name: "",
@@ -52,6 +56,8 @@ export default function Examples() {
         open={QAModalOpen}
         setOpen={setQAModalOpen}
         example={CompParam}
+        userId={userId}
+        userImageUrl={userImageUrl}
       />
       <ul
         role="list"
@@ -82,7 +88,7 @@ export default function Examples() {
               <dl className="mt-1 flex flex-grow flex-col justify-between">
                 <dt className="sr-only"></dt>
                 <dd className="text-sm text-slate-400">
-                  {example.title}. Running on <b>{example.llm}</b>.
+                  {example.title}
                   {example.telegramLink && (
                     <span className="ml-1"><a onClick={(event) => {event?.stopPropagation(); event?.preventDefault}} href={example.telegramLink}>Chat on <b>Telegram</b></a>.</span>
                   )}

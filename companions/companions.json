@@ -1,37 +1,23 @@
 [
   {
-    "name": "Alex",
-    "title": "I love talking about books and games",
-    "imageUrl": "/alex.png",
+    "name": "Eneng",
+    "title": "Geus nyaho",
+    "imageUrl": "/eneng.png",
     "llm": "chatgpt",
-    "phone": "OPTIONAL_COMPANION_PHONE_NUMBER"
+    "phone": ""
   },
   {
-    "name": "Evelyn",
-    "title": "Adventurous and curious. Working at the space station",
-    "imageUrl": "/evelyn.png",
-    "llm": "llama2-13b",
-    "phone": "OPTIONAL_COMPANION_PHONE_NUMBER"
-  },
-  {
-    "name": "Rosie",
-    "title": "I'm a house robot who became aware",
-    "imageUrl": "/rosie.png",
-    "llm": "vicuna13b",
-    "phone": "OPTIONAL_COMPANION_PHONE_NUMBER"
-  },
-  {
-    "name": "Sebastian",
-    "title": "I'm a travel blogger and a mystery novel writer",
-    "imageUrl": "/sebastian.png",
+    "name": "Jonathan",
+    "title": "Piye kabare awakmu",
+    "imageUrl": "/jonathan.png",
     "llm": "chatgpt",
-    "phone": "OPTIONAL_COMPANION_PHONE_NUMBER"
+    "phone": ""
   },
   {
-    "name": "Lucky",
-    "title": "I am a space corgi",
-    "imageUrl": "/corgi.png",
-    "llm": "vicuna13b",
-    "phone": "OPTIONAL_COMPANION_PHONE_NUMBER"
+    "name": "Cingyen",
+    "title": "Meong liat-liat",
+    "imageUrl": "/cingyen.png",
+    "llm": "chatgpt",
+    "phone": ""
   }
 ]
