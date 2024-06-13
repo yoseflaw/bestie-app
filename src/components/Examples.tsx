@@ -31,8 +31,9 @@ export default function Examples({userId, userImageUrl}: ExampleProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const companions = await getCompanions();
-        let entries = JSON.parse(companions);
+        // const companions = await getCompanions();
+        // let entries = JSON.parse(companions);
+        const entries = await getCompanions();
         let setme = entries.map((entry: any) => ({
           name: entry.name,
           title: entry.title,

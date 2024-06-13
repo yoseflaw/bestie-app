@@ -12,6 +12,7 @@ import { rateLimit } from "@/app/utils/rateLimit";
 import twilio from "twilio";
 import { openai } from '@ai-sdk/openai';
 import { streamText } from 'ai';
+import { promises as fs } from 'fs';
 
 dotenv.config({ path: `.env.local` });
 
@@ -72,7 +73,8 @@ export async function POST(req: Request) {
   // discussion. The PREAMBLE should include a seed conversation whose format will
   // vary by the model using it.
   const fs = require("fs").promises;
-  const data = await fs.readFile("companions/" + companionFileName, "utf8");
+  // const data = await fs.readFile("companions/" + companionFileName, "utf8");
+  const data = await fs.readFile(process.cwd() + "/companions/" + companionFileName, 'utf8');
 
   // Clunky way to break out PREAMBLE and SEEDCHAT from the character file
   const presplit = data.split("###ENDPREAMBLE###");
