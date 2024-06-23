@@ -1,12 +1,15 @@
 "use client";
 
-import {Fragment, useEffect, useState} from "react";
+import {Fragment, useEffect, useState, useRef} from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { Message } from "ai"
 import { useChat } from "ai/react";
 import {ChatBlock, responseToChatBlocks} from "@/components/ChatBlock";
 import MessageForm from '@/components/ui/messageform'
 import ChatMessage from '@/components/ui/chatmessage'
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar"
+import { getChatMessages } from "./actions";
+import { setClerkApiKey } from "@clerk/clerk-sdk-node";
 
 var last_name = "";
 
@@ -46,12 +49,21 @@ export default function QAModal({
     handleSubmit 
   } = useChat({
     api: "/api/" + clientExample.llm,
-    headers: { name: clientExample.name },
+    headers: { name: clientExample.name }
   });
+
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const chatContainer = chatContainerRef.current;
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [messages]);
 
   const handleClose = () => {
     setInput("");
-    setMessages([]);
+    setMessages([])
     stop();
     setOpen(false);
   };
@@ -88,11 +100,18 @@ export default function QAModal({
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-gray-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:p-6 w-full max-w-3xl">
-              <div className="flex h-[60px] items-center">
-                <span>Ngobrol dengan {example.name}</span>
-              </div>
+                <div className="flex flex-col">
+                  <h3 className="text-medium font-medium text-white">
+                    {example.name}
+                  </h3>
+                  <dl className="flex flex-grow flex-col justify-between">
+                    <h4 className="text-sm font-medium text-slate-400">
+                      {isLoading? "typing...": "online"}
+                    </h4>
+                  </dl>
+                </div>
                 <div className="h-[80vh]">
-                  <div className="flex flex-col gap-4 h-full overflow-y-auto pb-20">
+                  <div ref={chatContainerRef} className="flex flex-col gap-4 h-full overflow-y-auto pb-20">
                     {messages.map(m => (
                       <ChatMessage
                         key={m.id}

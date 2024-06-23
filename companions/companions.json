@@ -1,21 +1,21 @@
 [
   {
     "name": "Eneng",
-    "title": "Geus nyaho",
+    "title": "Gosip, Drakor, Seblak!",
     "imageUrl": "/eneng.png",
     "llm": "chatgpt",
     "phone": ""
   },
   {
     "name": "Jonathan",
-    "title": "Piye kabare awakmu",
+    "title": "Ada info loker yang oke ga?",
     "imageUrl": "/jonathan.png",
     "llm": "chatgpt",
     "phone": ""
   },
   {
     "name": "Cingyen",
-    "title": "Meong liat-liat",
+    "title": "Meong, apa liat-liat.",
     "imageUrl": "/cingyen.png",
     "llm": "chatgpt",
     "phone": ""

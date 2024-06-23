@@ -71,10 +71,10 @@ class MemoryManager {
     return result;
   }
 
-  public async readLatestHistory(companionKey: CompanionKey): Promise<string> {
+  public async readLatestHistoryRaw(companionKey: CompanionKey): Promise<string[]> {
     if (!companionKey || typeof companionKey.userId == "undefined") {
       console.log("Companion key set incorrectly");
-      return "";
+      return [];
     }
 
     const key = this.generateRedisCompanionKey(companionKey);
@@ -83,9 +83,25 @@ class MemoryManager {
     });
 
     result = result.slice(-30).reverse();
-    const recentChats = result.reverse().join("\n");
-    return recentChats;
+    const recentChats = result.reverse();
+
+    // Ensure all elements in result are strings
+    if (recentChats.every(item => typeof item === 'string')) {
+      return recentChats as string[];
+    } else {
+      throw new Error('Invalid data type in result array');
+    }
   }
+
+  public async readLatestHistory(companionKey: CompanionKey): Promise<string> {
+    const latestHistory = await this.readLatestHistoryRaw(companionKey);
+  
+    if (latestHistory.length === 0) {
+      return "";
+    }
+  
+    return latestHistory.join("\n");
+  }  
 
   public async seedChatHistory(
     seedContent: String,

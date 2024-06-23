@@ -16,7 +16,7 @@ export default function ChatMessage({ role, content, compImageUrl, userImageUrl 
             <div className="rounded-lg bg-blue-500 p-3 text-sm text-white">
               <p>{ content }</p>
             </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">3:46 PM</div>
+            {/* <div className="text-xs text-gray-500 dark:text-gray-400">3:46 PM</div> */}
           </div>
           <Avatar className="h-8 w-8 border">
             <AvatarImage alt="Avatar" src={userImageUrl} />
@@ -37,7 +37,7 @@ export default function ChatMessage({ role, content, compImageUrl, userImageUrl 
               { content }
             </p>
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">3:45 PM</div>
+          {/* <div className="text-xs text-gray-500 dark:text-gray-400">3:45 PM</div> */}
         </div>
       </div>
     )

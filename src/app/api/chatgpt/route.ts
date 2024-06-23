@@ -42,18 +42,11 @@ export async function POST(req: Request) {
     );
   }
 
-  // XXX Companion name passed here. Can use as a key to get backstory, chat history etc.
   const name = req.headers.get("name");
   const companionFileName = name + ".txt";
 
   const prompt = messages[messages.length-1]['content']
   console.log("prompt: ", prompt);
-  // if (isText) {
-  //   clerkUserId = userId;
-  //   clerkUserName = userName;
-  // } else {
-  // }
-
   if (!clerkUserId || !!!(await clerk.users.getUser(clerkUserId))) {
     console.log("user not authorized");
     return new NextResponse(
@@ -108,46 +101,6 @@ export async function POST(req: Request) {
     relevantHistory = similarDocs.map((doc: { pageContent: any; }) => doc.pageContent).join("\n");
   }
 
-  // const { stream, handlers } = LangChainStream();
-
-  // const model = new OpenAI({
-  //   streaming: true,
-  //   modelName: "gpt-4o",
-  //   openAIApiKey: process.env.OPENAI_API_KEY,
-  //   // callbacks: [new ConsoleCallbackHandler()],
-  //   callbackManager: CallbackManager.fromHandlers(handlers),
-  // });
-  // model.verbose = true;
-
-  // const replyWithTwilioLimit = isText
-  //   ? "You reply within 1000 characters."
-  //   : "";
-
-  // const chainPrompt = PromptTemplate.fromTemplate(`
-  //   You are ${name} and are currently talking to ${clerkUserName}.
-
-  //   ${preamble}
-
-  // Below are relevant details about ${name}'s past
-  // ${relevantHistory}
-  
-  // Below is a relevant conversation history
-
-  // ${recentChatHistory}`);
-
-  // const chain = new LLMChain({
-  //   llm: model,
-  //   prompt: chainPrompt,
-  // });
-
-  // const result = await chain
-  //   .call({
-  //     relevantHistory,
-  //     recentChatHistory: recentChatHistory,
-  //   })
-  //   .catch(console.error);
-
-
   const systemPrompt = `
   You are ${name} and are currently talking to ${clerkUserName}.
 
@@ -161,7 +114,10 @@ export async function POST(req: Request) {
   ${recentChatHistory}
   `
 
+  console.log("===SYSTEM===")
   console.log(systemPrompt)
+  console.log("===MESSAGES===")
+  console.log(messages)
 
   const result = await streamText({
     model: openai('gpt-4o'),
@@ -176,29 +132,4 @@ export async function POST(req: Request) {
   });
 
   return result.toAIStreamResponse();
-
-  // console.log("result", result);
-  // const chatHistoryRecord = await memoryManager.writeToHistory(
-  //   result!.text + "\n",
-  //   companionKey
-  // );
-  // console.log("chatHistoryRecord", chatHistoryRecord);
-  // if (isText) {
-  //   return NextResponse.json(result!.text);
-  // }
-
-  // const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
-  // const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  // const twilioClient = twilio(accountSid, twilioAuthToken);
-  // twilioClient.messages
-  //   .create({
-  //       body: result!.text,
-  //       from: 'whatsapp:+14155238886',
-  //       to: 'whatsapp:+628176670997'
-  //   }).catch((err) => {
-  //     console.log("WARNING: failed to send WA.", err);
-  //   });
-
-
-  // return new StreamingTextResponse(stream);
 }
