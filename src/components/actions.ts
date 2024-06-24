@@ -9,12 +9,6 @@ import { Message } from "ai";
 
 
 export async function getChatHistory(compName: string, userId: string) {
-  const records = await getChatHistoryRaw(compName, userId) 
-  return records.join("\n")
-}
-
-
-export async function getChatHistoryRaw(compName: string, userId: string) {
   const companionKey = {
     companionName: compName!,
     modelName: "chatgpt",
@@ -22,12 +16,7 @@ export async function getChatHistoryRaw(compName: string, userId: string) {
   };
   const memoryManager = await MemoryManager.getInstance();
   const records = await memoryManager.readLatestHistoryRaw(companionKey);
-  return records
-}
-
-export async function getChatMessages(compName: string, userId: string) {
-  const chatHistory = await getChatHistoryRaw(compName, userId)
-  return convertChatToMessages(chatHistory)
+  return convertChatToMessages(records)
 }
 
 export async function getCompanions(userId: string) {
@@ -46,7 +35,7 @@ export async function getCompanions(userId: string) {
   const data = JSON.parse(file);
 
   for (const datum of data) {
-    datum['chatHistory'] = await getChatMessages(datum.name, userId)
+    datum['chatHistory'] = await getChatHistory(datum.name, userId)
     // datum['chatHistory'] = convertChatToMessages(chatHistory)
   }
   return data

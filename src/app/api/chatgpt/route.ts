@@ -45,8 +45,6 @@ export async function POST(req: Request) {
   const name = req.headers.get("name");
   const companionFileName = name + ".txt";
 
-  const prompt = messages[messages.length-1]['content']
-  console.log("prompt: ", prompt);
   if (!clerkUserId || !!!(await clerk.users.getUser(clerkUserId))) {
     console.log("user not authorized");
     return new NextResponse(
@@ -83,11 +81,11 @@ export async function POST(req: Request) {
   const memoryManager = await MemoryManager.getInstance();
 
   const records = await memoryManager.readLatestHistory(companionKey);
-  if (records.length === 0) {
-    await memoryManager.seedChatHistory(seedchat, "\n\n", companionKey);
-  }
+  // if (records.length === 0) {
+  //   await memoryManager.seedChatHistory(seedchat, "\n\n", companionKey);
+  // }
 
-  await memoryManager.writeToHistory("Human: " + prompt + "\n", companionKey);
+  
   let recentChatHistory = await memoryManager.readLatestHistory(companionKey);
 
   // query Pinecone
@@ -103,17 +101,28 @@ export async function POST(req: Request) {
 
   const systemPrompt = `
   You are ${name} and are currently talking to ${clerkUserName}.
-
+  [START PREAMBLE]
   ${preamble}
+  [END PREAMBLE]
 
   Below are relevant details about ${name}'s past
+  [START DETAILS]
   ${relevantHistory}
+  [END DETAILS]
 
-  Below is a relevant conversation history
+  Here is an example of a conversation that you have, 
+  take note on the style of your responses and try your best to imitate it when answering user's chat:
+  [START SAMPLE]
+  ${seedchat}
+  [END SAMPLE]
 
+  Below is a relevant conversation history just for your reference:
+  [START CONTEXT]
   ${recentChatHistory}
+  [END CONTEXT]
   `
 
+  const prompt = messages[messages.length-1]['content']
   console.log("===SYSTEM===")
   console.log(systemPrompt)
   console.log("===MESSAGES===")
@@ -124,6 +133,10 @@ export async function POST(req: Request) {
     system: systemPrompt,
     messages: messages,
     async onFinish({text}) {
+      await memoryManager.writeToHistory(
+        "Human: " + prompt + "\n", 
+        companionKey
+      );
       await memoryManager.writeToHistory(
         name + ": " + text + "\n",
         companionKey

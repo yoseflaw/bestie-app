@@ -8,10 +8,16 @@ import {ChatBlock, responseToChatBlocks} from "@/components/ChatBlock";
 import MessageForm from '@/components/ui/messageform'
 import ChatMessage from '@/components/ui/chatmessage'
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar"
-import { getChatMessages } from "./actions";
+import { getChatHistory } from "./actions";
 import { setClerkApiKey } from "@clerk/clerk-sdk-node";
+import { L } from "@upstash/redis/zmscore-22fd48c7";
 
 var last_name = "";
+
+const fetchChatHistory = async (example_name: string, userId: string): Promise<Message[]> => {
+  const response = await getChatHistory(example_name, userId);
+  return response;
+};
 
 export default function QAModal({
   open,
@@ -27,6 +33,9 @@ export default function QAModal({
   userImageUrl: string;
 }) {
   const [clientExample, setClientExample] = useState(example);
+  const [recentHistory, setRecentHistory] = useState<Message[]>([])
+  const [historyLoading, setHistoryLoading] = useState(true)
+
   useEffect(() => {
     if (!example) {
       setClientExample({
@@ -36,6 +45,20 @@ export default function QAModal({
     } else {
       setClientExample(example);
     }
+
+    const fetchHistory = async () => {
+      setHistoryLoading(true);
+      try {
+        const data = await getChatHistory(example.name, userId);
+        setRecentHistory(data);
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+      } finally {
+        setHistoryLoading(false);
+      }
+    };
+    fetchHistory();
+    return setRecentHistory([])
   }, [example]);
 
   const { 
@@ -59,7 +82,7 @@ export default function QAModal({
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
-  }, [messages]);
+  }, [recentHistory, messages]);
 
   const handleClose = () => {
     setInput("");
@@ -112,6 +135,16 @@ export default function QAModal({
                 </div>
                 <div className="h-[80vh]">
                   <div ref={chatContainerRef} className="flex flex-col gap-4 h-full overflow-y-auto pb-20">
+                    {historyLoading? <div className="loader"></div>: ""}
+                    {recentHistory.map(m => (
+                      <ChatMessage
+                        key={m.id}
+                        role={m.role}
+                        content={m.content}
+                        compImageUrl={example.imageUrl}
+                        userImageUrl={userImageUrl}
+                      />
+                    ))}
                     {messages.map(m => (
                       <ChatMessage
                         key={m.id}
