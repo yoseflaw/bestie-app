@@ -25,21 +25,23 @@ export default function MessageForm({ input, isLoading, handleInputChange, handl
   
     return (
       <form onSubmit={customSubmit}>
-        <Textarea
-          value={input}
-          className="min-h-[48px] w-full rounded-2xl resize-none border border-gray-200 bg-gray-100 p-3 pr-16 text-sm shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-800 dark:text-gray-50 dark:focus:border-gray-600 dark:border-gray-800"
-          id="message"
-          name="message"
-          placeholder="Apa ni yang lagi happening?"
-          rows={1}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          disabled={isLoading}
-        />
-        {/* <Button className="absolute top-3 right-3 w-8 h-8" size="icon" type="submit">
-          <ArrowUpIcon className="h-4 w-4" />
-          <span className="sr-only">Send</span>
-        </Button> */}
+        <div className="flex relative gap-2">
+          <Textarea
+            value={input}
+            className="min-h-[48px] w-full rounded-2xl resize-none border border-gray-200 bg-gray-100 p-3 pr-16 text-sm shadow-sm transition-colors dark:border-gray-800 dark:bg-gray-800 dark:text-gray-50 dark:focus:border-gray-600 dark:border-gray-800"
+            id="message"
+            name="message"
+            placeholder="Apa ni yang lagi happening?"
+            rows={1}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            disabled={isLoading}
+          />
+          <Button className="absolute top-1/2 right-3 transform -translate-y-1/2 w-8 h-8" size="icon" type="submit">
+            <ArrowUpIcon className="h-4 w-4" />
+            <span className="sr-only">Send</span>
+          </Button>
+        </div>
       </form>
     )
   }

@@ -32,34 +32,11 @@ export default function QAModal({
   userId: any;
   userImageUrl: string;
 }) {
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const [clientExample, setClientExample] = useState(example);
   const [recentHistory, setRecentHistory] = useState<Message[]>([])
   const [historyLoading, setHistoryLoading] = useState(true)
 
-  useEffect(() => {
-    if (!example) {
-      setClientExample({
-        llm: "",
-        name: "",
-      });
-    } else {
-      setClientExample(example);
-    }
-
-    const fetchHistory = async () => {
-      setHistoryLoading(true);
-      try {
-        const data = await getChatHistory(example.name, userId);
-        setRecentHistory(data);
-      } catch (error) {
-        console.error('Error fetching chat history:', error);
-      } finally {
-        setHistoryLoading(false);
-      }
-    };
-    fetchHistory();
-    return setRecentHistory([])
-  }, [example]);
 
   const { 
     isLoading,
@@ -75,14 +52,40 @@ export default function QAModal({
     headers: { name: clientExample.name }
   });
 
-  const chatContainerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const chatContainer = chatContainerRef.current;
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
-  }, [recentHistory, messages]);
+  }, [messages, recentHistory]);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      setHistoryLoading(true);
+      try {
+        const data = await getChatHistory(example.name, userId);
+        setRecentHistory(data);
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+      } finally {
+        setHistoryLoading(false);
+      }
+    };
+    fetchHistory();
+    return setRecentHistory([])
+  }, [example, open]);
+
+  useEffect(() => {
+
+    if (!example) {
+      setClientExample({
+        llm: "",
+        name: "",
+      });
+    } else {
+      setClientExample(example);
+    }
+  }, [example]);
 
   const handleClose = () => {
     setInput("");
@@ -123,16 +126,27 @@ export default function QAModal({
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-gray-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:p-6 w-full max-w-3xl">
+              <div className="flex flex-row justify-between items-center">
                 <div className="flex flex-col">
                   <h3 className="text-medium font-medium text-white">
                     {example.name}
                   </h3>
                   <dl className="flex flex-grow flex-col justify-between">
-                    <h4 className="text-sm font-medium text-slate-400">
-                      {isLoading? "typing...": "online"}
+                    <h4 className={"text-sm font-medium " + (isLoading ? "text-slate-400" : "text-green-400")}>
+                      {isLoading ? "typing..." : "online"}
                     </h4>
                   </dl>
                 </div>
+                <button
+                  onClick={handleClose}
+                  className="text-white p-2 rounded-full hover:bg-gray-700 focus:outline-none"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
                 <div className="h-[80vh]">
                   <div ref={chatContainerRef} className="flex flex-col gap-4 h-full overflow-y-auto pb-20">
                     {historyLoading? <div className="loader"></div>: ""}

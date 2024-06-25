@@ -67,8 +67,10 @@ export default function Examples({userId, userImageUrl}: ExampleProps) {
           <li
             key={example.name}
             onClick={() => {
-              setCompParam(example);
-              setQAModalOpen(true);
+              if (example.name.length > 0) {
+                setCompParam(example);
+                setQAModalOpen(true);
+              }
             }}
             className="col-span-2 flex flex-col rounded-lg bg-slate-800  text-center shadow relative ring-1 ring-white/10 cursor-pointer hover:ring-sky-300/70 transition"
           >
