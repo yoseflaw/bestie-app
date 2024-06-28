@@ -1,22 +1,29 @@
 [
   {
-    "name": "Eneng",
-    "title": "Gosip, Drakor, Seblak!",
-    "imageUrl": "/eneng.png",
-    "llm": "chatgpt",
-    "phone": ""
-  },
-  {
     "name": "Jonathan",
-    "title": "Ada info loker yang oke ga?",
-    "imageUrl": "/jonathan.png",
+    "title": "Ada info loker yang oke ga? Susah ya cari kerja jaman sekarang.",
+    "imageUrl": "/jonathan.jpg",
     "llm": "chatgpt",
     "phone": ""
   },
   {
     "name": "Cingyen",
-    "title": "Meong, apa liat-liat.",
-    "imageUrl": "/cingyen.png",
+    "title": "Meong, apa babu liat-liat. Cingyen mau bobo.",
+    "imageUrl": "/cingyen.jpg",
+    "llm": "chatgpt",
+    "phone": ""
+  },
+  {
+    "name": "Eneng",
+    "title": "Gosip, Drakor, Seblak!",
+    "imageUrl": "/eneng.jpg",
+    "llm": "chatgpt",
+    "phone": ""
+  },
+  {
+    "name": "Bangku Taman",
+    "title": "Saksi bisu perjalanan waktu. Menanam kisah cinta dan pilu dalam retakan kayu.",
+    "imageUrl": "/bangku-taman.jpg",
     "llm": "chatgpt",
     "phone": ""
   }
