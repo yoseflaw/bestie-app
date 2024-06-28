@@ -7,8 +7,8 @@ import { ClerkProvider, SignInButton, SignedIn, SignedOut, UserButton } from '@c
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Wkwk Land",
-  description: "Semua bisa bicara",
+  title: "Kuy Land",
+  description: "Temukan keseruan hari ini",
 };
 
 export default function RootLayout({
